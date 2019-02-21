@@ -15,6 +15,9 @@ bool newLine_b = false;
 uint8_t errCheck_a = 0;
 uint8_t errCheck_b = 0;
 
+uint16_t keep_a = 0;
+uint16_t keep_b = 0;
+
 // software serial #1: RX = digital pin 10, TX = digital pin 11
 SoftwareSerial portOne(10, 11);
 
@@ -81,62 +84,95 @@ void loop() {
     rx_a="";
   }else{
     if( (rx_a.toInt()-last_a>50) || (rx_a.toInt()-last_a<-50) ){
-      last_a = rx_a.toInt();
+      if(rx_a != ""){
+        last_a = rx_a.toInt();
+      }
       rx_a="";     
     }else{
-      last_a = rx_a.toInt();
+      if(rx_a != ""){
+        last_a = rx_a.toInt();
+      }
     }
   }
   
   check_a = false;
   double_m = 0;
-  
+  if(portOne.isListening() == 1){
+    portOne.stopListening();
+  }
 
 /////////////////////////////////////////
 // part B
 //////////////////////////////////////////
-
-  
-//  Serial.println("Read B");/
+//  Serial.println("Read B");
   
   portTwo.listen();
   delay(19);
-  while (portTwo.available() > 0) {
-    rx_char = portTwo.read();
-
-    if(rx_char == 'm'){
-      double_m = double_m + 1;  
-    }
-    else if(rx_char==13 || rx_char==10){
+  
+  while(1){
+    if(portTwo.available() > 0){
+      rx_char = portTwo.read();
+      if(rx_char == 10){
+        newLine_b = true;
+        continue;
+      }
+      if(newLine_b == true){
+        if(rx_char == 'm'){
+          double_m = double_m + 1;  
+        }
+        else{
+          rx_b.concat(rx_char);
+        }
+        if(double_m == 2){
+          newLine_b = false;
+          check_b = true;
+          break;
+        }
+      }else{
+        errCheck_b++;
+      }
       
-    }
-    else{
-      rx_b.concat(rx_char);
-    }
-    if(double_m == 2){
-        check_b = true;
-        break;
+    }else{
+      if( (errCheck_b++) > 100){
+        break;  
+      }
     }
   }
-  if(check_b==false){
+  errCheck_b = 0;
+  
+  if(check_b == false){
     rx_b="";
   }else{
     if( (rx_b.toInt()-last_b>50) || (rx_b.toInt()-last_b<-50) ){
-      last_b = rx_b.toInt();
-      rx_b = "";     
+      if(rx_b != ""){
+        last_b = rx_b.toInt();
+      }
+      rx_b="";     
     }else{
-      last_b = rx_b.toInt();
+      if(rx_b != ""){
+        last_b = rx_b.toInt();
+      }
     }
   }
   
   check_b = false;
   double_m = 0;
-  
+  if(portTwo.isListening() == 1){
+    portTwo.stopListening();
+  }
+  if(rx_a != ""){
+    keep_a = rx_a.toInt();
+  }
+  if(rx_b != ""){
+    keep_b = rx_b.toInt();
+  }
   if(rx_a!="" || rx_b != ""){
     Serial.print("A: ");
-    Serial.print(rx_a);
+    Serial.print(keep_a);
+
     Serial.print("  ");
     Serial.print("B: ");
-    Serial.println(rx_b);
+    Serial.println(keep_b);
+
   }
 }
