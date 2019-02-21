@@ -47,7 +47,7 @@ void loop() {
   rx_b = "";
   
   portOne.listen();
-  delay(19);
+  delay(40);
   
   while(1){
     if(portOne.available() > 0){
@@ -78,6 +78,7 @@ void loop() {
       }
     }
   }
+  newLine_a = false;
   errCheck_a = 0;
   
   if(check_a==false){
@@ -107,7 +108,7 @@ void loop() {
 //  Serial.println("Read B");
   
   portTwo.listen();
-  delay(19);
+  delay(40);
   
   while(1){
     if(portTwo.available() > 0){
@@ -138,6 +139,7 @@ void loop() {
       }
     }
   }
+  newLine_b = false;
   errCheck_b = 0;
   
   if(check_b == false){
