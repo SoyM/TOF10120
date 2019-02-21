@@ -13,3 +13,4 @@ performance independent of object reflectance.
 ## datasheet
 
 [TOF10120.pdf](TOF10120.pdf)
+![TOF10120.jpg](TOF10120.jpg)
